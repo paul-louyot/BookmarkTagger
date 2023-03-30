@@ -3,17 +3,20 @@ import { ref, watch } from 'vue'
 const props = defineProps({
   bookmark: Object
 })
+const emit = defineEmits(['remove'])
 
-const tagsString = ref(`${props.bookmark.tags.join(' ')} `);
+function remove() {
+  props.bookmark.remove()
+    .then( () => { emit('remove', props.bookmark.id) })
+}
 
-watch(
-  tagsString,
-  () => {
-    const tagsList = tagsString.value.split(' ').filter( x => x)
-    props.bookmark.updateTags(tagsList);
-  }
-)
+function updateTags(event){
+  const tagsList = event.target.value.split(' ').filter( x => x)
+  props.bookmark.updateTags(tagsList);
+}
 
+const initialValue = props.bookmark.tags.join(' ') + ' '
+  
 </script>
 
 <template>
@@ -31,20 +34,28 @@ watch(
         <div class="row">
           <div class="col">
             <div class="input-group input-group-sm">
-              <input class="form-control tags-input" v-model="tagsString">
+              <input 
+              class="form-control tags-input" 
+              :value="initialValue"
+              @input="updateTags"
+              >
             </div>
           </div>
           <div class="col d-flex align-items-center justify-content-end">
-            <span class="pe-cursor">
+            <span class="pe-cursor" @click="remove()">
               <i class="bi bi-x-lg pe-cursor delete-button"></i>
             </span>
           </div>
         </div>
       </div>
     </div>
-    <!-- <small>
-      {{ bookmark.chromeTitle }}
-    </small> -->
+    <!-- <details>
+      <summary>Details</summary>
+      <pre>
+        {{ bookmark }}
+      </pre>
+    </details> -->
+    
   </li>
-
+  
 </template>

@@ -1,20 +1,13 @@
 <script setup>
-// import HelloWorld from './components/HelloWorld.vue'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import BookmarkItem from './components/BookmarkItem.vue';
+import TagItem from './components/TagItem.vue'
 import { BookmarkWithTags } from './BookmarkWithTags.js'
 
 const bookmarks = ref([])
 const bookmarksTree = ref([]);
 const bookmarksWithTags = ref([]);
 const selectedTagsSet = ref(new Set);
-
-watch(
-  selectedTagsSet.value,
-  () => {
-    // console.log(selectedTagsSet.value)
-  }
-)
 
 chrome.bookmarks
   .getTree()
@@ -25,7 +18,6 @@ chrome.bookmarks
       bookmarks.value.map((bookmark) => new BookmarkWithTags(bookmark))
                      .sort((a, b) =>  1 * (b.dateAdded - a.dateAdded) )
   })
-  // .then(() => {console.log(bookmarksWithTags.value)})
 
 const filteredBookmarks = computed(() => {
   return bookmarksWithTags.value.filter((bookmark) =>  bookmark.hasTags([...selectedTagsSet.value]))
@@ -55,7 +47,10 @@ function flattenTree( tree ) {
   return list.flat( Infinity )
 }
 
-
+function removeBookmark(id){
+  const index = bookmarksWithTags.value.findIndex( b => b.id === id );
+  bookmarksWithTags.value.splice(index, 1);
+}
 
 </script>
 
@@ -75,34 +70,19 @@ function flattenTree( tree ) {
   </div>
 
   <div id="badges-container" class="my-2">
-    <template v-for="tag in tagsSet.values()">
-      <span class="badge bg-secondary m-1 pe-cursor" @click="selectedTagsSet.add(tag)">
-        {{ tag }}
-      </span>
+    <template v-for="tag in tagsSet.values()" :key="tag">
+      <TagItem 
+        :tag="tag" 
+        :selected-tags-set="selectedTagsSet"
+        @add="(tag) => selectedTagsSet.add(tag)"
+        @remove="(tag) => selectedTagsSet.delete(tag)"
+      />
     </template>
   </div>
 
-  <!-- <ul class="list-group" id="bookmarks-container">
-  </ul class="list-group"> -->
-
   <ul class="list-group">
-    <template v-for="bookmark in filteredBookmarks">
-      <BookmarkItem :bookmark="bookmark"/>
+    <template v-for="bookmark in filteredBookmarks" :key="bookmark.id">
+      <BookmarkItem :bookmark="bookmark" @remove="removeBookmark"/>
     </template>
   </ul>
 </template>
-
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>

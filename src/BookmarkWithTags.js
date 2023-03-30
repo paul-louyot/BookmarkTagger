@@ -12,7 +12,7 @@ class BookmarkWithTags {
     return [...this.tagsSet];
   }
   
-  // setters for tags and title; each updates chromeTitle
+  // TODO: setters for tags and title; each updates chromeTitle
   
   get hasSomeTags(){
     return this.tagsSet.size > 0;
@@ -27,6 +27,10 @@ class BookmarkWithTags {
     chrome.bookmarks.update(this.id, {
       title: this.getNewChromeTitle()
     });
+  }
+  
+  remove(){
+    return chrome.bookmarks.remove( this.id )
   }
   
   getNewChromeTitle(){
@@ -68,12 +72,5 @@ class BookmarkWithTags {
     return boolean
   }
 }
-
-// const bookmarkWithTags = new BookmarkWithTags({
-//   title: '[ tag ] test title'
-// })
-// console.log(bookmarkWithTags.title)
-// console.log(bookmarkWithTags.tags)
-// console.log(bookmarkWithTags.hasSomeTags)
 
 export { BookmarkWithTags }
