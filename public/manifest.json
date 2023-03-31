@@ -1,5 +1,5 @@
 {
-    "name": "Bookmark tags with Vite",
+    "name": "BookmarkTagger",
     "version": "0.0.0.1",
     "manifest_version": 3,
     "description": "Add tags to your bookmarks",

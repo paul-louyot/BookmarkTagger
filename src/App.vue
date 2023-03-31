@@ -55,7 +55,7 @@ function removeBookmark(id){
 </script>
 
 <template>
-  <h1>Bookmark tags handler</h1>
+  <h1>BookmarkTagger</h1>
   <div class="row">
     <div class="col">
       <div class="input-group">
